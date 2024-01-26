@@ -77,9 +77,37 @@
 
 ### 4.  Под линукс пользователем Postgres создадим каталог для бэкапов
 
+        bash-4.2$ cd /var/lib/pgsql/15/backups/
+        bash-4.2$ ls -l
+        total 0
+        
+        bash-4.2$ cd ..
+        
+        bash-4.2$ ls -la
+        total 8
+        drwx------.  4 postgres postgres   51 Dec 29 09:41 .
+        drwx------.  3 postgres postgres   79 Nov  8 15:34 ..
+        drwx------.  2 postgres postgres    6 Nov  8 15:34 backups
+        drwx------. 20 postgres postgres 4096 Jan 26 00:00 data
+        -rw-------.  1 postgres postgres  924 Dec 29 05:49 initdb.log
+        bash-4.2$ ^C
 
 
 ### 5.  Сделаем логический бэкап используя утилиту COPY
+
+        otus_hw_12=# \copy myschema.student to '/var/lib/pgsql/15/backups/backup_copy.sql';
+        COPY 100
+        otus_hw_12=# 
+
+Проверим что файл бекапа появилсф в директории
+
+        bash-4.2$ cd ./backups/
+        bash-4.2$ ls -la
+        total 12
+        drwx------. 2 postgres postgres    29 Jan 26 10:34 .
+        drwx------. 4 postgres postgres    51 Dec 29 09:41 ..
+        -rw-r--r--. 1 postgres postgres 10392 Jan 26 10:34 backup_copy.sql
+        bash-4.2$ ^C
 
 
 ### 6.  Восстановим в 2 таблицу данные из бэкапа.
