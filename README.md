@@ -112,6 +112,28 @@
 
 ### 6.  Восстановим в 2 таблицу данные из бэкапа.
 
+создадим таблицу 2, востановим в неё данные из бекапа и проверим селектом
+
+        otus_hw_12=# CREATE TABLE myschema.table2(id serial, fio char(100));
+        CREATE TABLE
+        otus_hw_12=# select * from  myschema.table2;
+         id | fio
+        ----+-----
+        (0 rows)
+        
+        otus_hw_12=# \copy myschema.table2 from '/var/lib/pgsql/15/backups/backup_copy.sql';
+        COPY 100
+        otus_hw_12=# select * from  myschema.table2 limit 5;
+         id |                                                 fio
+        ----+------------------------------------------------------------------------------------------------------
+          1 | noname
+          2 | noname
+          3 | noname
+          4 | noname
+          5 | noname
+        (5 rows)
+        
+        otus_hw_12=# ^C
 
 ### 7.  Используя утилиту pg_dump создадим бэкап в кастомном сжатом формате двух таблиц
 
