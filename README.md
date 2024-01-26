@@ -138,4 +138,58 @@
 ### 7.  Используя утилиту pg_dump создадим бэкап в кастомном сжатом формате двух таблиц
 
 
+
+
 ### 8.  Используя утилиту pg_restore восстановим в новую БД только вторую таблицу!
+
+Создадам новую БД
+
+        otus_hw_12=# \l
+                                                          List of databases
+            Name    |  Owner   | Encoding |   Collate   |    Ctype    | ICU Locale | Locale Provider |   Access privileges
+        ------------+----------+----------+-------------+-------------+------------+-----------------+-----------------------
+         otus_hw_12 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+         postgres   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+         template0  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres          +
+                    |          |          |             |             |            |                 | postgres=CTc/postgres
+         template1  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres          +
+                    |          |          |             |             |            |                 | postgres=CTc/postgres
+        (4 rows)
+        
+        otus_hw_12=# CREATE DATABASE NewDB;
+        CREATE DATABASE
+        otus_hw_12=# \l
+                                                          List of databases
+            Name    |  Owner   | Encoding |   Collate   |    Ctype    | ICU Locale | Locale Provider |   Access privileges
+        ------------+----------+----------+-------------+-------------+------------+-----------------+-----------------------
+         newdb      | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+         otus_hw_12 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+         postgres   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+         template0  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres          +
+                    |          |          |             |             |            |                 | postgres=CTc/postgres
+         template1  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres          +
+                    |          |          |             |             |            |                 | postgres=CTc/postgres
+        (5 rows)
+        
+        otus_hw_12=#
+
+
+
+        newdb=#
+        newdb=# \dn
+              List of schemas
+          Name  |       Owner
+        --------+-------------------
+         public | pg_database_owner
+        (1 row)
+        
+        newdb=#
+        newdb=#
+        newdb=#
+        newdb=# \dt
+        Did not find any relations.
+        newdb=#
+
+
+
+
