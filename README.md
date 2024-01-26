@@ -150,6 +150,17 @@ pg_dump -t myschema.student otus_hw_12 > /var/lib/pgsql/15/backups/backup_dump_s
 pg_dump -t myschema.student otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_student.gz
 pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_table2.gz
 
+с данными командами получил ту же проблему при востановлении что и на занятии
+
+
+        pg_restore: hint: Try "pg_restore --help" for more information.
+        bash-4.2$ pg_restore -d newdb /var/lib/pgsql/15/backups/backup_dump_student.gz  pg_restore: error: input file does not appear to be a valid archive
+
+новые команды
+
+pg_dump --t myschema.student otus_hw_12 --create -Fd -f /var/lib/pgsql/15/backups/test.dir
+pg_dump --t myschema.table2 otus_hw_12 --create -Fd -f /var/lib/pgsql/15/backups/test.dir2
+
 Выполнение
 
         bash-4.2$ pg_dump -t myschema.student otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_student.gz
@@ -158,7 +169,7 @@ pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backup
         Password:
         bash-4.2$
 
-Проверка наличия сжатыхфайлов бекапов таблиц
+Проверка наличия сжатых файлов бекапов таблиц
         
         bash-4.2$ ls -l
         total 56
@@ -169,7 +180,29 @@ pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backup
         -rw-r--r--. 1 postgres postgres  1117 Jan 26 11:50 backup_dump_table2.gz
         bash-4.2$
 
+=====================
+Выполнение с директорией
 
+        bash-4.2$ pg_dump --t myschema.student otus_hw_12 --create -Fd -f /var/lib/pgsql/15/backups/test.dir
+        Password:
+        bash-4.2$ ^C
+        
+        bash-4.2$ pg_dump --t myschema.table2 otus_hw_12 --create -Fd -f /var/lib/pgsql/15/backups/test.dir
+        pg_dump: error: could not create directory "/var/lib/pgsql/15/backups/test.dir": File exists
+        
+        bash-4.2$ pg_dump --t myschema.table2 otus_hw_12 --create -Fd -f /var/lib/pgsql/15/backups/test.dir2
+        Password:
+        bash-4.2$ ls -l
+        total 56
+        -rw-r--r--. 1 postgres postgres 10392 Jan 26 10:34 backup_copy.sql
+        -rw-r--r--. 1 postgres postgres 24294 Jan 26 11:27 backup_dump.sql
+        -rw-r--r--. 1 postgres postgres  1125 Jan 26 11:48 backup_dump_student.gz
+        -rw-r--r--. 1 postgres postgres 12070 Jan 26 11:42 backup_dump_student.sql
+        -rw-r--r--. 1 postgres postgres  1117 Jan 26 11:50 backup_dump_table2.gz
+        drwx------. 2 postgres postgres    40 Jan 26 12:09 test.dir
+        drwx------. 2 postgres postgres    40 Jan 26 12:12 test.dir2
+        bash-4.2$
+        
 
 
 
@@ -223,6 +256,101 @@ pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backup
         Did not find any relations.
         newdb=#
 
+        
+подготовлена команда востановления
+
+pg_restore -d newdb /var/lib/pgsql/15/backups/test.dir
+
+        bash-4.2$ pg_restore -d newdb /var/lib/pgsql/15/backups/test.dir
+        Password:
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        LINE 1: CREATE TABLE myschema.student (
+                             ^
+        Command was: CREATE TABLE myschema.student (
+            id integer NOT NULL,
+            fio character(100)
+        );
+        
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: ALTER TABLE myschema.student OWNER TO postgres;
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: CREATE SEQUENCE myschema.student_id_seq
+            AS integer
+            START WITH 1
+            INCREMENT BY 1
+            NO MINVALUE
+            NO MAXVALUE
+            CACHE 1;
+        
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: ALTER TABLE myschema.student_id_seq OWNER TO postgres;
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: ALTER SEQUENCE myschema.student_id_seq OWNED BY myschema.student.id                                                                             ;
+        
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: ALTER TABLE ONLY myschema.student ALTER COLUMN id SET DEFAULT nextv                                                                                             al('myschema.student_id_seq'::regclass);
+        
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        Command was: COPY myschema.student (id, fio) FROM stdin;
+        pg_restore: error: could not execute query: ERROR:  schema "myschema" does not e                                                                             xist
+        LINE 1: SELECT pg_catalog.setval('myschema.student_id_seq', 100, tru...
+                                         ^
+        Command was: SELECT pg_catalog.setval('myschema.student_id_seq', 100, true);
+        pg_restore: warning: errors ignored on restore: 8
+        bash-4.2$
 
 
+получил ошибку, так как в новойбазе не создал схему
+создаю схему
+
+        newdb=# CREATE SCHEMA myschema;
+        CREATE SCHEMA
+        newdb=#
+        newdb=#
+        newdb=# \dt
+        Did not find any relations.
+        newdb=#
+        newdb=#
+        newdb=#
+        newdb=# \dt myschema.*
+                   List of relations
+          Schema  |  Name   | Type  |  Owner
+        ----------+---------+-------+----------
+         myschema | student | table | postgres
+        (1 row)
+
+
+
+теперь востановление прошло без ошибки
+
+        bash-4.2$ pg_restore -d newdb /var/lib/pgsql/15/backups/test.dir
+        Password:
+        bash-4.2$
+
+Проверяю новую базу
+
+        newdb=# \dt myschema.*
+                   List of relations
+          Schema  |  Name   | Type  |  Owner
+        ----------+---------+-------+----------
+         myschema | student | table | postgres
+        (1 row)
+        
+        newdb=# select * from myschema.student limit 5;
+         id |                                                 fio
+        ----+------------------------------------------------------------------------------------------------------
+          1 | noname
+          2 | noname
+          3 | noname
+          4 | noname
+          5 | noname
+        (5 rows)
+
+
+таблица востановлена в новую базу
 
