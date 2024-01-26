@@ -137,7 +137,40 @@
 
 ### 7.  Используя утилиту pg_dump создадим бэкап в кастомном сжатом формате двух таблиц
 
+сначала протестировал работу утилиты 
+
 pg_dump -d otus_hw_12 --create > /var/lib/pgsql/15/backups/backup_dump.sql
+
+pg_dump -t myschema.student otus_hw_12 > /var/lib/pgsql/15/backups/backup_dump_student.sql
+
+------------------------------------------
+
+Потом подготовил команды
+
+pg_dump -t myschema.student otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_student.gz
+pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_table2.gz
+
+Выполнение
+
+        bash-4.2$ pg_dump -t myschema.student otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_student.gz
+        Password:
+        bash-4.2$ pg_dump -t myschema.table2 otus_hw_12 --create | gzip > /var/lib/pgsql/15/backups/backup_dump_table2.gz
+        Password:
+        bash-4.2$
+
+Проверка наличия сжатыхфайлов бекапов таблиц
+        
+        bash-4.2$ ls -l
+        total 56
+        -rw-r--r--. 1 postgres postgres 10392 Jan 26 10:34 backup_copy.sql
+        -rw-r--r--. 1 postgres postgres 24294 Jan 26 11:27 backup_dump.sql
+        -rw-r--r--. 1 postgres postgres  1125 Jan 26 11:48 backup_dump_student.gz
+        -rw-r--r--. 1 postgres postgres 12070 Jan 26 11:42 backup_dump_student.sql
+        -rw-r--r--. 1 postgres postgres  1117 Jan 26 11:50 backup_dump_table2.gz
+        bash-4.2$
+
+
+
 
 
 ### 8.  Используя утилиту pg_restore восстановим в новую БД только вторую таблицу!
